@@ -5,24 +5,26 @@ import android.arch.lifecycle.ViewModel;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.TimeZone;
 
 public class TimezoneViewModel extends ViewModel {
-    private ArrayList<String> timezones;
+    private String[] timezones;
     private int currentTimezone;
 
     private MutableLiveData<Calendar> localDate;
     private MutableLiveData<Calendar> convertedDate;
     private MutableLiveData<String[]> timezoneList;
 
-    public TimezoneViewModel(ArrayList<String> timezones, MutableLiveData<Calendar> localDate, MutableLiveData<Calendar> convertedDate, MutableLiveData<String[]> timezoneList) {
-        this.timezones = timezones;
-        this.currentTimezone = 0;
-        this.localDate = localDate;
-        this.convertedDate = convertedDate;
-        this.timezoneList = timezoneList;
+    public TimezoneViewModel() {
+        localDate = new MutableLiveData<>();
+        localDate.setValue(Calendar.getInstance());
+        timezoneList = new MutableLiveData<>();
+        timezoneList.setValue(timezones);
+        convertedDate = new MutableLiveData<>();
+        convertDate();
     }
 
-    public ArrayList<String> getTimezones() {
+    public String[] getTimezones() {
         return timezones;
     }
 
@@ -42,7 +44,7 @@ public class TimezoneViewModel extends ViewModel {
         return timezoneList;
     }
 
-    public void setTimezones(ArrayList<String> timezones) {
+    public void setTimezones(String[] timezones) {
         this.timezones = timezones;
     }
 
@@ -60,5 +62,11 @@ public class TimezoneViewModel extends ViewModel {
 
     public void setTimezoneList(MutableLiveData<String[]> timezoneList) {
         this.timezoneList = timezoneList;
+    }
+
+    private void convertDate() {
+        Calendar toDate = Calendar.getInstance(TimeZone.getTimeZone(timezones[currentTimezone]));
+        toDate.setTime(localDate.getValue().getTime());
+        convertedDate.setValue(toDate);
     }
 }
